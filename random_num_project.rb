@@ -16,16 +16,19 @@
 # 3. Give rescue/begin case
 # 4. Ask user to play again. → yes “Horray!” or no “Aw, shucks…”
 
-puts "Do you want override total guesses in this game? (Y/N)"
-prompt_guess = $stdin.gets.chomp.downcase
+# Setting Up Game
+
 waiting = true
+total_guesses = 5
 while waiting
-  if prompt_guess == "y" || prompt_guess == "yes"
+  puts "Do you want override total guesses in this game? (Y/N)"
+  prompt = $stdin.gets.chomp.downcase
+  if prompt == "y" || prompt == "yes"
     puts "How many guesses do you want?"
-    total_guesses = $stdin.gets.chomp
+    total_guesses = $stdin.gets.chomp.to_i
     puts "You chose #{total_guesses} guesses!"
     waiting = false
-  elsif prompt_guess == "n" || prompt_guess == "no"
+  elsif prompt == "n" || prompt == "no"
     total_guesses = 5
     puts "defaulted guesses is #{total_guesses}"
     waiting = false
@@ -34,44 +37,77 @@ while waiting
   end
 end
 
-puts "Do you want override lower threshold in this game?"
-prompt_guess = $stdin.gets.chomp.downcase
 waiting = true
+min = 0
+lower_overrided = true
 while waiting
-  if prompt_guess == "y" || prompt_guess == "yes"
+  puts "Do you want override lower threshold in this game?"
+  prompt = $stdin.gets.chomp.downcase
+  if prompt == "y" || prompt == "yes"
     puts "Lower threshold?"
-    min = $stdin.gets.chomp
+    min = $stdin.gets.chomp.to_i
     puts "You set lower threshold to be #{min}"
-  elsif prompt_guess == "n" || prompt_guess == "no"
+    waiting = false
+  elsif prompt == "n" || prompt == "no"
     min = 0
     puts "defaulted lower threshold is #{min}"
     waiting = false
+    lower_overrided = false
   else 
     puts "Incorrect input"
   end
 end    
 
-puts "Do you want override upper threshold in this game?"
-prompt_guess = $stdin.gets.chomp.downcase
+
 max_is_set = false
 waiting = true
+max = 10
 while waiting
-  if prompt_guess == "y" || prompt_guess == "yes"  
+  puts "Do you want override upper threshold in this game?"
+  prompt = $stdin.gets.chomp.downcase
+  if prompt == "y" || prompt == "yes"
     while !max_is_set
       puts "Upper threshold?"
-      max = $stdin.gets.chomp  
+      max = $stdin.gets.chomp.to_i
       if max <= min
         puts "You may not do that, choose a number higher than #{min}" 
       else
         puts "You set upper threshold to be #{max}"
         max_is_set = true
+        waiting = false
       end
     end
-  elsif prompt_guess == "n" || prompt_guess == "no"
+  elsif (prompt == "n" || prompt == "no") && !lower_overrided
     max = 10
     puts "defaulted upper threshold is #{max}"
     waiting = false
   else
-    puts "Incorrect input"    
+    puts "Incorrect input or you need to override upper threshold"    
   end
 end
+
+# Generate Random Number
+random_number = rand(max)
+
+# Playing the game now, guess number
+puts "Guess the Magic Number!"
+prompt = $stdin.gets.chomp.to_i
+
+guessed = false
+while !guessed
+  if prompt == random_number
+    puts "NAILED IT!!! The number was #{random_number}!"
+    guessed = true
+  elsif prompt > random_number 
+    puts "Too high!"
+    total_guesses = total_guess - 1
+    puts "Total guesses left is now at #{total_guesses}"
+  elsif prompt < random_number
+    puts "Too low!"
+    total_guesses = total_guess - 1
+    puts "Total guesses left is now at #{total_guesses}"
+  elsif total_guesses == 0
+    puts "You lose! I win! Womp womp!"  
+    guessed = true
+  end
+end  
