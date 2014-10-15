@@ -1,5 +1,5 @@
 # Michael Dere
-# Updated since 
+# Updated since 10/14/2014
 
 # Requirements:
 # 1. Program must tell the user that it is thinking of a number between 1 and 10. 
@@ -27,7 +27,20 @@ while main_loop_running
 	  prompt = $stdin.gets.chomp.downcase
 	  if prompt == "y" || prompt == "yes"
 			puts "How many guesses do you want?"
-			total_guesses = $stdin.gets.chomp.to_i
+			total_guesses = $stdin.gets.chomp
+			checking = true
+			regex_check = /^[0-9]+$/
+			while checking
+			  if !regex_check.match(total_guesses).nil? && !(total_guesses == "0")
+			    checking = false
+			  elsif total_guesses == "0"
+			  	puts "Sheesh buddy, give yourself a chance!"
+			  	total_guesses = $stdin.gets.chomp
+			  else
+			  	puts "You inputted #{total_guesses}, please input a valid number. Sheesh"
+			  	total_guesses = $stdin.gets.chomp
+				end
+			end
 			puts "You chose #{total_guesses} guesses!"
 			waiting = false
 	  elsif prompt == "n" || prompt == "no"
@@ -47,7 +60,17 @@ while main_loop_running
 	  prompt = $stdin.gets.chomp.downcase
 	  if prompt == "y" || prompt == "yes"
 			puts "Lower threshold?"
-			min = $stdin.gets.chomp.to_i
+			min = $stdin.gets.chomp
+			checking = true
+			regex_check = /^[0-9]+$/
+			while checking
+			  if !regex_check.match(min).nil?
+			    checking = false
+			  else
+			  	puts "You inputted #{min}, please input a valid number. Sheesh"
+			  	min = $stdin.gets.chomp
+				end
+			end			
 			puts "You set lower threshold to be #{min}"
 			waiting = false
 	  elsif prompt == "n" || prompt == "no"
@@ -70,8 +93,18 @@ while main_loop_running
 	  if prompt == "y" || prompt == "yes"
 		while !max_is_set
 		  puts "Upper threshold?"
-		  max = $stdin.gets.chomp.to_i
-		  if max <= min
+		  max = $stdin.gets.chomp
+			checking = true
+			regex_check = /^[0-9]+$/
+			while checking
+			  if !regex_check.match(max).nil?
+			    checking = false
+			  else
+			  	puts "You inputted #{max}, please input a valid number. Sheesh"
+			  	max = $stdin.gets.chomp
+				end
+			end			  
+		  if max.to_i <= min.to_i
 			puts "You may not do that, choose a number higher than #{min}" 
 		  else
 			puts "You set upper threshold to be #{max}"
@@ -89,28 +122,46 @@ while main_loop_running
 	end
 
 	# Generate Random Number
-	random_number = rand(max)
+	random_number = rand(max.to_i)
 
 	# Playing the game now, guess number
 	guessed = false
+	total_guesses = total_guesses.to_i	
 	while !guessed
 	  puts "Guess the Magic Number!"
-	  prompt = $stdin.gets.chomp.to_i
-	  if prompt == random_number && total_guesses != 0
-		puts "NAILED IT!!! The number was #{random_number}!"
-		guessed = true
-	  elsif prompt > random_number && total_guesses != 0 
-		puts "Too high!"
-		total_guesses = total_guesses - 1
-		puts "Total guesses left is now at #{total_guesses}"
-	  elsif prompt < random_number && total_guesses != 0
-		puts "Too low!"
-		total_guesses = total_guesses - 1
-		puts "Total guesses left is now at #{total_guesses}"
-	  elsif total_guesses == 0
-		puts "You lose! I win! Womp womp!"  
-		guessed = true
-	  end
+	  prompt = $stdin.gets.chomp
+		checking = true
+		regex_check = /^[0-9]+$/
+		while checking
+			if !regex_check.match(prompt).nil?
+				checking = false
+			else
+				puts "You inputted #{prompt}, please input a valid number. Sheesh"
+				prompt = $stdin.gets.chomp
+			end
+		end				  
+		if total_guesses == 0
+			puts "You lose! I win! Womp womp!"  
+			guessed = true
+	  else	  
+	  	prompt = prompt.to_i
+			if prompt == random_number && total_guesses > 0
+				puts "NAILED IT!!! The number was #{random_number}!"
+				guessed = true
+			elsif prompt > random_number && total_guesses > 0 
+				puts "Too high!"
+				total_guesses = total_guesses - 1
+				puts "Total guesses left is now at #{total_guesses}"
+			elsif prompt < random_number && total_guesses > 0
+				puts "Too low!"
+				total_guesses = total_guesses - 1
+				if total_guesses == 0
+					puts "Last chance Buddy..."
+				else
+					puts "Total guesses left is now at #{total_guesses}"
+				end
+			end
+		end
 	end
 	
 	# Ask player if s/he wants to play again!
